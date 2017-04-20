@@ -110,6 +110,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Text Include="classAndSideway.txt" />
+    <Text Include="inputdata.txt" />
+    <Text Include="output.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BinTree.cpp" />
+    <ClCompile Include="driver.cpp" />
+    <ClCompile Include="nodedata.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BinTree.h" />
+    <ClInclude Include="nodedata.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
