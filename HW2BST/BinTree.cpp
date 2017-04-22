@@ -263,6 +263,7 @@ bool BinTree::equalityHelper(const Node* thisNode, const Node* toCompare) const
 
 ostream& operator<<(ostream &os, const BinTree &toPrint)
 {
+	os << endl;
 	toPrint.inorderHelper(toPrint.root, os);
 	return os;
 }
