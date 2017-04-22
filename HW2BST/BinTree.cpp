@@ -1,15 +1,33 @@
-#include "BinTree.h"
+/* -------------------binTree.cpp-------------------------
+Dongkyu Daniel Kim, CSS343A, ##
+Creation: April 16th, 2017
+Last Accessed: April 21th, 2017
+
+----------------------------------------------------------
+Purpose:
+
+Implements BinTree functions. Among these:
+	- Copy Construction and Assignment
+	- << Overloading
+	- Single Insertion
+	- Whole Tree Deletion
+	- BST-to-Array and Array-to-BST conversion
+	- (In)Equality Operator Overloading
+
+---------------------------------------------------------------*/
+#include "bintree.h"
 
 //------------------------------------------------
 // CONSTRUCTORS/DESTRUCTOR
 
 /*----------BinTree
 Purpose:
-
+	Creates an empty tree with a root of NULL.
+	Tree can be built with subsequent inserts.
 Preconditions:
-
+	none
 Postconditions:
-
+	none
 */
 BinTree::BinTree()
 {
@@ -24,7 +42,8 @@ Preconditions:
 	Binary Search Tree. Creates a perfect copy
 	rather than performing node-wise insertions.
 Postconditions:
-
+	this BinTree will have an identical structure
+	with identical values to the tree that was copied.
 */
 BinTree::BinTree(const BinTree &toCopy)
 {
@@ -34,16 +53,18 @@ BinTree::BinTree(const BinTree &toCopy)
 
 /*----------~BinTree
 Purpose:
-
+	Empties allocated NodeData and Nodes.
 Preconditions:
-
+	None
 Postconditions:
-
+	Emptied tree, root pointer with value of NULL.
 */
 BinTree::~BinTree()
 {
 	makeEmpty();
 }							
+
+
 
 
 //-------------------------------------
@@ -57,9 +78,9 @@ Purpose:
 	node exists, returns false otherwise.
 
 Preconditions:
-
+	root must exist
 Postconditions:
-
+	does not change BinTree
 */
 bool BinTree::isEmpty() const
 {
@@ -81,9 +102,11 @@ Purpose:
 	a recursive deletion, if not empty.
 
 Preconditions:
-
+	none
 Postconditions:
-
+	Empties tree of Nodes and associated NodeData.
+	Root is emptied and set to NULL. If root is already
+	null, no action takes place.
 */
 void BinTree::makeEmpty()
 {
@@ -91,7 +114,6 @@ void BinTree::makeEmpty()
 	{
 		return;
 	}
-
 	emptyHelper(root);
 }
 
@@ -105,8 +127,9 @@ Preconditions:
 toDelete must not have a NULL value.
 
 Postconditions:
-Deallocates children memory, left and right
-pointers and actual NodeData memory.
+Deallocates children memory -- both the NodeData
+and the Node itself -- left and right
+pointers set to Null.
 */
 void BinTree::emptyHelper(Node* &toDelete)
 {
@@ -120,8 +143,6 @@ void BinTree::emptyHelper(Node* &toDelete)
 	}
 
 	delete toDelete->data;
-	toDelete->left = NULL;
-	toDelete->right = NULL;
 	delete toDelete;
 	toDelete = NULL;
 }
@@ -130,11 +151,12 @@ void BinTree::emptyHelper(Node* &toDelete)
 Purpose:
 	Called by either the copy constructor or assignment
 	operator to clone the structure and values of another
-	binTree.
+	binTree. Inserts new Nodes in prefix order to preserve
+	structure of the tree.
 Preconditions:
-	
+	Tree must be empty / root = NULL.
 Postconditions:
-	
+	Creates identical tree with deep-copy NodeData values.
 */
 void BinTree::copyHelper(const Node* toCopy)
 {
@@ -156,11 +178,12 @@ void BinTree::copyHelper(const Node* toCopy)
 
 /*---------- Assignment Operator
 Purpose:
-
+	Copies the second BinTree in structure and values to
+	the BinTree that called the = operator.
 Preconditions:
-
+	None
 Postconditions:
-
+	Returns an identical BinTree of toCopy. 
 */
 BinTree& BinTree::operator=(const BinTree &toCopy)
 {
@@ -191,9 +214,9 @@ Purpose:
 	iterates through the trees in prefix order and returns false
 	at the first discrepancy.
 Preconditions:
-
+	None
 Postconditions:
-
+	Neither tree is changed after the operation is executed.
 */
 bool BinTree::operator==(const BinTree &toCompare) const
 {
@@ -215,13 +238,13 @@ bool BinTree::operator==(const BinTree &toCompare) const
 
 /*---------- equalityHelper
 Purpose:
-Checks equality by performing an prefix traversal of two trees and
-comparing NodeData at every step. Recursive function, breaks traversal
-and cascades false up to the first call if an inequality is found.
+	Checks equality by performing an prefix traversal of two trees and
+	comparing NodeData at every step. Recursive function, breaks traversal
+	and cascades false up to the first call if an inequality is found.
 Preconditions:
-Neither thisNode nor toCompare can be a pointer with the value NULL.
+	Neither thisNode nor toCompare can be a pointer with the value NULL.
 Postconditions:
-
+	None.
 */
 bool BinTree::equalityHelper(const Node* thisNode, const Node* toCompare) const
 {
@@ -261,20 +284,28 @@ bool BinTree::equalityHelper(const Node* thisNode, const Node* toCompare) const
 	return false;
 }
 
+/*---------- ostream operator <<
+Purpose:
+	Allows the object to be printed to console output.
+Preconditions:
+	None
+Postconditions:
+	None
+*/
 ostream& operator<<(ostream &os, const BinTree &toPrint)
 {
-	os << endl;
 	toPrint.inorderHelper(toPrint.root, os);
+	os << endl;
 	return os;
 }
 
 /*---------- inOrderHelper
 Purpose:
-
+	Prints the tree inOrder to output a sorted list of terms.
 Preconditions:
-
+	The tree must be a sorted BST.
 Postconditions:
-
+	None.
 */
 ostream& BinTree::inorderHelper(const Node *toPrint, ostream &output) const
 {
@@ -293,13 +324,11 @@ ostream& BinTree::inorderHelper(const Node *toPrint, ostream &output) const
 	return output;
 }
 
-
-
 /*---------- Inequality Operator
 Purpose:
 	Inequality checker.
 Preconditions:
-
+	None.
 Postconditions:
 	Returns the negated value of the equality
 	operator.
@@ -317,9 +346,9 @@ Purpose:
 	the insertion and returns true.
 
 Preconditions:
-
+	None
 Postconditions:
-
+	One additional node will be added to the BST in its appropriate sorted position.
 */
 bool BinTree::insert(NodeData* toInsert)
 {
@@ -371,11 +400,10 @@ Purpose:
 	and, if found, store the address of the found data in result and return true.
 	If the data is not found, return false.
 
-
 Preconditions:
-
+	None
 Postconditions:
-
+	Returns a found result in result. If there is no found result, result is unchanged.
 */
 bool BinTree::retrieve(const NodeData &toRetrieve, NodeData *&result) const
 {
@@ -401,11 +429,12 @@ Purpose:
 	If node is not found, return false but also update toReturn so that it reflects
 	the last node traversed. This pointer will hold the parent node of a node to be
 	inserted.
-
 Preconditions:
-
+	None
 Postconditions:
-
+	Returns
+		1) the found result in toReturn and returns true
+		2) the parent of the lass node traversed and returns false
 */
 bool BinTree::findNode(const NodeData &value, Node* &toReturn) const
 {
@@ -464,6 +493,16 @@ void BinTree::displaySideways() const {
 	sideways(root, 0);
 }
 
+/*---------- bstreeToArray
+Purpose:
+	Places all nodes into a predefined array inOrder. After btaHelper
+	executes, the tree still exists, so makeEmpty() is called at the end
+	of the function to deallocate the memory.
+Preconditions:
+	Sorted Tree, empty array.
+Postconditions:
+	Empty Tree, Sorted Array.
+*/
 void BinTree::bstreeToArray(NodeData* outArray[])
 {
 	int arrayIndex = 0;
@@ -472,6 +511,16 @@ void BinTree::bstreeToArray(NodeData* outArray[])
 	makeEmpty();
 }
 
+/*---------- btaHelper
+Purpose:
+	is passed an index of where to insert into the array
+	and a particular node. Traverses the tree and inserts values
+	to outArray in order. 
+Preconditions:
+	Sorted tree, empty array value at index.
+Postconditions:
+	Newly created nodeData at outArray[index].
+*/
 void BinTree::btaHelper(const Node* toMove, int &index, NodeData* outArray[])
 {
 	if (toMove == NULL)
@@ -487,6 +536,7 @@ void BinTree::btaHelper(const Node* toMove, int &index, NodeData* outArray[])
 
 	//copies data into array
 	NodeData *temp = new NodeData(*toMove->data);
+	delete outArray[index];
 	outArray[index] = temp;
 	temp = NULL;
 	//increments index
@@ -499,6 +549,14 @@ void BinTree::btaHelper(const Node* toMove, int &index, NodeData* outArray[])
 	}
 }
 
+/*---------- arrayToBSTree
+Purpose:
+	Converts a sorted array of values into a new BST
+Preconditions:
+	Sorted Array, empty tree.
+Postconditions:
+	Empty array, Sorted Balanced BST.
+*/
 void BinTree::arrayToBSTree(NodeData *toMove[])
 {
 	// if the array is empty, don't construct a tree.
@@ -523,12 +581,24 @@ void BinTree::arrayToBSTree(NodeData *toMove[])
 
 }
 
+/*---------- atbHelper
+Purpose:
+	Assists arrayToBST by recursively dividing the array into two groups
+	and inserting the midpoint into the tree. Deallocates NodeData as
+	it progresses through the array, as new instances are being created
+	in insert().
+Preconditions:
+	Empty BinTree.
+Postconditions:
+	Empty Array. 
+*/
 void BinTree::atbHelper(const int lowerLim, const int upperLim, NodeData* toMove[])
 {
 	// if the limits are the same, there is only one cell.
 	if (lowerLim == upperLim)
 	{
 		insert(toMove[lowerLim]);
+		delete toMove[lowerLim];
 		toMove[lowerLim] = NULL;
 		return;
 	}
@@ -551,6 +621,7 @@ void BinTree::atbHelper(const int lowerLim, const int upperLim, NodeData* toMove
 	// two new halves with new boundaries.
 	int midway = (lowerLim + upperLim) / 2;
 	insert(toMove[midway]);
+	delete toMove[midway];
 	toMove[midway] = NULL;
 
 	// new bounds do not include the recently included midway. 1 cell offsets for both.
@@ -580,6 +651,16 @@ void BinTree::sideways(Node* current, int level) const {
 	}
 }
 
+/*---------- getHeight
+Purpose:
+	First finds the node if it exists in the tree. If the node does not exist
+	return 0. If it exists, calls heightHelper to determine the longest branch
+	to a leaf to return as the height.
+Preconditions:
+	The tree does not have to be sorted, so nothing I suppose.
+Postconditions:
+	Returns the longest branch, with no traversal being a length of 1.
+*/
 int BinTree::getHeight(const NodeData &toFind) const
 {
 	Node *temp = NULL;
@@ -595,10 +676,12 @@ int BinTree::getHeight(const NodeData &toFind) const
 }
 
 /* ------------------------------heightHelper
+Purpose:
 	Recursive function that searches through an unsorted tree for a specific value.
-	Is given the parent height and the current node in the tree to compare to toFind.
-	Cascades the height at which toFind was found to root call, otherwise cascades 0.
-
+Precondition:
+	None
+Postcondition:
+	Returns cumulative length of longest branch in subtree.
 */
 int BinTree::heightHelper(const Node* source) const
 {	

@@ -14,7 +14,7 @@ public:
 	BinTree& operator=(const BinTree &);
 	bool operator==(const BinTree &) const;
 	bool operator!=(const BinTree &) const;
-	bool insert(NodeData*);
+	bool insert(NodeData*);					
 	bool retrieve(const NodeData &, NodeData* &) const;
 	int getHeight(const NodeData &) const;
 	void bstreeToArray(NodeData*[]);
@@ -30,14 +30,15 @@ private:
 	Node* root;								// root of the tree
 
 	// utility functions
-	ostream& inorderHelper(const Node*, ostream&) const;
 	void sideways(Node*, int) const;			// provided below, helper for displaySideways()
-	void emptyHelper(Node* &);
-	bool equalityHelper(const Node*, const Node*) const;
-	void copyHelper(const Node* toCopy);
-	bool findNode(const NodeData &value, Node* &toReturn) const;
-	int heightHelper(const Node* source) const;
-	void btaHelper(const Node* toMove, int &index, NodeData*[]);
-	void atbHelper(const int lowerLim, const int upperLim, NodeData* toMove[]);
+
+	ostream&	inorderHelper(const Node*, ostream&) const;
+	void		emptyHelper(Node* &);
+	bool		equalityHelper(const Node*, const Node*) const;
+	void		copyHelper(const Node* toCopy);
+	bool		findNode(const NodeData &value, Node* &toReturn) const;
+	int			heightHelper(const Node* source) const;
+	void		btaHelper(const Node* toMove, int &index, NodeData*[]);
+	void		atbHelper(const int lowerLim, const int upperLim, NodeData* toMove[]);
 };
 

@@ -1,3 +1,22 @@
+/* -------------------bintree.cpp-------------------------
+Dongkyu Daniel Kim, CSS343A, ##
+Creation: April 16th, 2017
+Last Accessed: April 21th, 2017
+
+----------------------------------------------------------
+Purpose:
+	Tests the functionality of the BinTree class. The code has been
+	slightly altered so that the BuildTree function deletes the 
+	newly allocated NodeData values after inserting them into the
+	tree, as BinTree.insert() does not assume it is being passed an
+	allocated piece of memory, and thus creates its own deep copy.
+
+	Otherwise, the driver code is basically unaltered.
+	
+	(Not really sure why the "rightmost" leaf always shows up
+	on the inorder print out.)
+---------------------------------------------------------------*/
+
 // I will test your BinTree class using either this main or
 // a very similar one, and this buildTree.  
 // You will want to do thorough testing on your own, 
@@ -115,8 +134,7 @@ void buildTree(BinTree& T, ifstream& infile) {
 		// would do a setData if there were more than a string
 
 		bool success = T.insert(ptr);
-		if (!success)
-			delete ptr;                       // duplicate case, not inserted 
+		delete ptr;
 	}
 }
 
