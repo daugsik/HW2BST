@@ -2,7 +2,9 @@
 #include "nodedata.h"
 
 class BinTree {				// you add class/method comments and assumptions
+
 	friend ostream& operator<<(ostream&, const BinTree&);
+
 public:
 	BinTree();								// constructor
 	BinTree(const BinTree &);				// copy constructor
@@ -28,13 +30,14 @@ private:
 	Node* root;								// root of the tree
 
 	// utility functions
-	void inorderHelper(...) const;
+	ostream& inorderHelper(const Node*, ostream&) const;
 	void sideways(Node*, int) const;			// provided below, helper for displaySideways()
 	void emptyHelper(Node* &);
 	bool equalityHelper(const Node*, const Node*) const;
 	void copyHelper(const Node* toCopy);
 	bool findNode(const NodeData &value, Node* &toReturn) const;
-	int heightHelper(const NodeData &toFind, const Node* toSearch, const int &parentHeight) const;
+	int heightHelper(const Node* source) const;
 	void btaHelper(const Node* toMove, int &index, NodeData*[]);
+	void atbHelper(const int lowerLim, const int upperLim, NodeData* toMove[]);
 };
 

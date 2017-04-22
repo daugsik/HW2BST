@@ -95,6 +95,37 @@ void BinTree::makeEmpty()
 	emptyHelper(root);
 }
 
+/*---------- emptyHelper
+Purpose:
+Recursive function to delete nodes.
+Calls itself on left and right children
+before deleting itself (postorder).
+
+Preconditions:
+toDelete must not have a NULL value.
+
+Postconditions:
+Deallocates children memory, left and right
+pointers and actual NodeData memory.
+*/
+void BinTree::emptyHelper(Node* &toDelete)
+{
+	if (toDelete->left != NULL)
+	{
+		emptyHelper(toDelete->left);
+	}
+	if (toDelete->right != NULL)
+	{
+		emptyHelper(toDelete->right);
+	}
+
+	delete toDelete->data;
+	toDelete->left = NULL;
+	toDelete->right = NULL;
+	delete toDelete;
+	toDelete = NULL;
+}
+
 /*---------- copyHelper
 Purpose:
 	Called by either the copy constructor or assignment
@@ -122,34 +153,6 @@ void BinTree::copyHelper(const Node* toCopy)
 	}
 }
 
-/*---------- emptyHelper
-Purpose:
-	Recursive function to delete nodes.
-	Calls itself on left and right children
-	before deleting itself (postorder).
-
-Preconditions:
-	toDelete must not have a NULL value.
-
-Postconditions:
-	Deallocates children memory, left and right
-	pointers and actual NodeData memory.
-*/
-void BinTree::emptyHelper(Node* &toDelete)
-{
-	if (toDelete->left != NULL)
-	{
-		emptyHelper(toDelete->left);
-	}
-	if (toDelete->right != NULL)
-	{
-		emptyHelper(toDelete->right);
-	}
-
-	delete toDelete->data;
-	delete toDelete;
-	toDelete = NULL;
-}
 
 /*---------- Assignment Operator
 Purpose:
@@ -203,7 +206,7 @@ bool BinTree::operator==(const BinTree &toCompare) const
 	// if at least one root is empty, return false.
 	if (this->isEmpty() || toCompare.isEmpty())
 	{
-		return true;
+		return false;
 	}
 
 	// If both have non-empty trees, pass to equalityHelper.
@@ -212,11 +215,11 @@ bool BinTree::operator==(const BinTree &toCompare) const
 
 /*---------- equalityHelper
 Purpose:
-	Checks equality by performing an prefix traversal of two trees and
-	comparing NodeData at every step. Recursive function, breaks traversal
-	and cascades false up to the first call if an inequality is found.
+Checks equality by performing an prefix traversal of two trees and
+comparing NodeData at every step. Recursive function, breaks traversal
+and cascades false up to the first call if an inequality is found.
 Preconditions:
-	Neither thisNode nor toCompare can be a pointer with the value NULL.
+Neither thisNode nor toCompare can be a pointer with the value NULL.
 Postconditions:
 
 */
@@ -234,7 +237,7 @@ bool BinTree::equalityHelper(const Node* thisNode, const Node* toCompare) const
 	}
 
 	// Check if current nodes are equal.
-	if (thisNode->data == toCompare->data)
+	if (*thisNode->data == *toCompare->data)
 	{
 		// Check if left children of the two trees are equal (if both of them are non-null pointers)
 		// if an inequality is found, cascade false.
@@ -257,6 +260,39 @@ bool BinTree::equalityHelper(const Node* thisNode, const Node* toCompare) const
 	// if current nodes are not equal, return false.
 	return false;
 }
+
+ostream& operator<<(ostream &os, const BinTree &toPrint)
+{
+	toPrint.inorderHelper(toPrint.root, os);
+	return os;
+}
+
+/*---------- inOrderHelper
+Purpose:
+
+Preconditions:
+
+Postconditions:
+
+*/
+ostream& BinTree::inorderHelper(const Node *toPrint, ostream &output) const
+{
+	if (toPrint->left != NULL)
+	{
+		inorderHelper(toPrint->left, output);
+	}
+
+	output << *toPrint->data << " ";
+
+	if (toPrint->right != NULL)
+	{
+		inorderHelper(toPrint->right, output);
+	}
+
+	return output;
+}
+
+
 
 /*---------- Inequality Operator
 Purpose:
@@ -286,12 +322,25 @@ Postconditions:
 */
 bool BinTree::insert(NodeData* toInsert)
 {
+	// if root is NULL, perform special case insertion.
+	if (root == NULL)
+	{
+		root = new Node;
+		root->left = NULL;
+		root->right = NULL;
+		NodeData *rootData = new NodeData(*toInsert);
+		root->data = rootData;
+		rootData = NULL;
+	}
+
 	Node *parent = NULL;
 
 	// if the tree does not already contain the value, perform insertion
 	if (!findNode(*toInsert, parent))
 	{
 		Node *child = new Node;
+		child->left = NULL;
+		child->right = NULL;
 		NodeData *childData = new NodeData(*toInsert);
 		child->data = childData;
 		childData = NULL;
@@ -414,19 +463,6 @@ void BinTree::displaySideways() const {
 	sideways(root, 0);
 }
 
-/*---------- inOrderHelper
-Purpose:
-
-Preconditions:
-
-Postconditions:
-
-*/
-void BinTree::inorderHelper(...) const
-{
-
-}
-
 void BinTree::bstreeToArray(NodeData* outArray[])
 {
 	int arrayIndex = 0;
@@ -449,7 +485,9 @@ void BinTree::btaHelper(const Node* toMove, int &index, NodeData* outArray[])
 	}
 
 	//copies data into array
-	*outArray[index] = *toMove->data;
+	NodeData *temp = new NodeData(*toMove->data);
+	outArray[index] = temp;
+	temp = NULL;
 	//increments index
 	index++;
 
@@ -460,8 +498,64 @@ void BinTree::btaHelper(const Node* toMove, int &index, NodeData* outArray[])
 	}
 }
 
-void BinTree::arrayToBSTree(NodeData*[])
+void BinTree::arrayToBSTree(NodeData *toMove[])
 {
+	// if the array is empty, don't construct a tree.
+	if (toMove[0] == NULL)
+	{
+		return;
+	}
+
+	int sizeOfArray = 0;
+	while (toMove[sizeOfArray] != NULL)
+	{
+		sizeOfArray++;
+	}
+
+	// if array is empty, don't build anything.
+	if (sizeOfArray == 0)
+	{
+		return;
+	}
+
+	atbHelper(0, sizeOfArray-1, toMove);
+
+}
+
+void BinTree::atbHelper(const int lowerLim, const int upperLim, NodeData* toMove[])
+{
+	// if the limits are the same, there is only one cell.
+	if (lowerLim == upperLim)
+	{
+		insert(toMove[lowerLim]);
+		toMove[lowerLim] = NULL;
+		return;
+	}
+
+	// if the limits are off by 1, insert in order.
+	if (upperLim - lowerLim == 1)
+	{
+		insert(toMove[lowerLim]);
+		delete toMove[lowerLim];
+		toMove[lowerLim] = NULL;
+
+		insert(toMove[upperLim]);
+		delete toMove[upperLim];
+		toMove[upperLim] = NULL;
+
+		return;
+	}
+
+	// otherwise, insert midpoint between lowerLim and upperLim, then separate into
+	// two new halves with new boundaries.
+	int midway = (lowerLim + upperLim) / 2;
+	insert(toMove[midway]);
+	toMove[midway] = NULL;
+
+	// new bounds do not include the recently included midway. 1 cell offsets for both.
+	// Left branch
+	atbHelper(lowerLim, (midway - 1), toMove);
+	atbHelper((midway + 1), upperLim, toMove);
 
 }
 
@@ -487,7 +581,16 @@ void BinTree::sideways(Node* current, int level) const {
 
 int BinTree::getHeight(const NodeData &toFind) const
 {
-	return heightHelper(toFind, root, 0);
+	Node *temp = NULL;
+	
+	// if found, perform height check
+	if (findNode(toFind, temp))
+	{
+		return heightHelper(temp);
+	}
+
+	// if not found, return 0
+	return 0;
 }
 
 /* ------------------------------heightHelper
@@ -496,34 +599,38 @@ int BinTree::getHeight(const NodeData &toFind) const
 	Cascades the height at which toFind was found to root call, otherwise cascades 0.
 
 */
-int BinTree::heightHelper(const NodeData &toFind, const Node* toSearch, const int &parentHeight) const
-{
-	// if heightHelper cannot find the NodeData, return 0.
-	if (toSearch == NULL)
-	{
-		return 0;
-	}
-	
-	//child height
-	int newHeight = parentHeight + 1;
+int BinTree::heightHelper(const Node* source) const
+{	
+	// if the node is a leaf, return 1.
 
-	// if found, return the height.
-	if (*toSearch->data == toFind)
+	if (source->left == NULL
+		&& source->right == NULL)
 	{
-		return newHeight;
+		return 1;
 	}
 
-	// if the node data is greater than toFind, traverse left
-	if (*toSearch->data < toFind)
+	int leftsub = 0;
+	int rightsub = 0;
+
+	// traverse subtrees
+	if (source->left != NULL)
 	{
-		return (heightHelper(toFind, toSearch->left, newHeight));
+		leftsub = heightHelper(source->left);
 	}
-	// else traverse right
+
+	if (source->right != NULL)
+	{
+		rightsub = heightHelper(source->right);
+	}
+
+	// return the "taller" of the two subtrees
+	if (leftsub > rightsub)
+	{
+		return (leftsub + 1);
+	}
+
 	else
 	{
-		return (heightHelper(toFind, toSearch->right, newHeight));
+		return (rightsub + 1);
 	}
-
-	//catchall case
-	return 0;
 }
